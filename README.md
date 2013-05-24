@@ -1,9 +1,9 @@
 # ixa-pipe-ned
 
 This repository contains the Named Entity Disambiguation tool based on DBpedia Spotlight.
-Providing that a DBpedia Spotlight Rest server is running, the ixa-pipe-ned module will take
+Providing that a DBpedia Spotlight Rest server for a given language is running, the ixa-pipe-ned module will take
 KAF as input (containing <entities> elements) and perform Named Entity Disambiguation
-for each language within the OpeNER project.
+for your language of choice.
 
 Developed by IXA NLP Group (ixa.si.ehu.es) for the 7th Framework OpeNER European project.
 
@@ -19,12 +19,12 @@ The contents of the repository are the following:
 
 In a snapshot:
 
-    1. Modify ixa-pipe-ned/core/pom.xml as specified below.
+    1. Modify ixa-pipe-ned/pom.xml as specified below.
     2. Compile ixa-pipe-ned module with `mvn clean package`
-    3. Start Rest server as specified [here](https://github.com/opener-project/EHU-DBpedia-Spotlight).
+    3. Start Rest server as specified [here](https://github.com/ragerri/ixa-dbpedia-spotlight).
        cd dbpedia-spotlight/conf
        java -jar ../dist/target/dbpedia-spotlight-0.6-jar-with-dependencies.jar
-    4. cat ner.kaf | ixa-pipe-ned/core/target/ixa-pipe-ned-1.0.jar -p $PORT_NUMBER
+    4. cat ner.kaf | ixa-pipe-ned/target/ixa-pipe-ned-1.0.jar -p $PORT_NUMBER
 
 If you already have installed in your machine JDK7 and MAVEN 3, please go to step 3
 directly. Otherwise, follow the detailed steps:
@@ -75,16 +75,16 @@ You should see reference to the MAVEN version you have just installed plus the J
 
 ### 3. Download the repository
 
-    git clone git@github.com:opener-project/ixa-pipe-ned.git
+    git clone git@github.com:ragerri/ixa-pipe-ned.git
 
 ### 4. Modify pom.xml
 
-Go to the core subdirectory:
+Go to the the repository:
 
-    cd ixa-pipe-ned/core/
+    cd ixa-pipe-ned/
 
 And modify the properties element of the pom.xml to point to where the dbpedia-spotlight jar is placed
-as setup by [following these instructions](https://github.com/opener-project/EHU-DBpedia-Spotlight):
+as setup by [following these instructions](https://github.com/ragerri/ixa-dbpedia-spotlight):
 
     <properties>
             <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -102,7 +102,7 @@ Once this path is correctly set, install the ixa-pipe-ned module
 
     mvn clean package
 
-This command will create a `ixa-pipe-ned/core/target` directory containing the
+This command will create a `ixa-pipe-ned/target` directory containing the
 ixa-pipe-ned-1.0.jar binary with all dependencies included.
 
 ### 6. ixa-pipe-ned USAGE
@@ -119,10 +119,10 @@ The port numbers assigned to each language are the following:
     - nl: 2060
 
 If you wanted to change the port numbers, please do so at the corresponding server_$lang.properties
-in the [EHU-DBpedia-Spotlight](https://github.com/opener-project/EHU-DBpedia-Spotlight) repository. Note that
+in the [ixa-dbpedia-spotlight](https://github.com/ragerri/ixa-dbpedia-spotlight) repository. Note that
 you will also need to change the corresponding server_$lang.properties in `dbpedia-spotlight/conf/` directory.
 
-**Once you have a [DBpedia Spotlight Rest server running](https://github.com/opener-project/EHU-DBpedia-Spotlight)** you
+**Once you have a [DBpedia Spotlight Rest server running](https://github.com/ragerri/ixa-dbpedia-spotlight)** you
 can send queries to it via the ixa-pipe-ned module as follows:
 
     cat ner.kaf | java -jar ixa-pipe-ned-1.0.jar -p $PORT_NUMBER
