@@ -19,12 +19,12 @@ The contents of the repository are the following:
 
 In a snapshot:
 
-    1. Modify ixa-pipe-ned/pom.xml as specified below.
-    2. Compile ixa-pipe-ned module with `mvn clean package`
-    3. Start Rest server as specified [here](https://github.com/ragerri/ixa-dbpedia-spotlight).
-       cd dbpedia-spotlight/conf
-       java -jar ../dist/target/dbpedia-spotlight-0.6-jar-with-dependencies.jar
-    4. cat ner.kaf | ixa-pipe-ned/target/ixa-pipe-ned-1.0.jar -p $PORT_NUMBER
+ 1. Modify ixa-pipe-ned/pom.xml as specified below.
+ 2. Compile ixa-pipe-ned module with mvn clean package
+ 3. Start Rest server as specified [here](https://github.com/ragerri/ixa-dbpedia-spotlight).
+    cd dbpedia-spotlight/conf
+    java -jar ../dist/target/dbpedia-spotlight-0.6-jar-with-dependencies.jar
+ 4. cat ner.kaf | ixa-pipe-ned/target/ixa-pipe-ned-1.0.jar -p $PORT_NUMBER
 
 If you already have installed in your machine JDK7 and MAVEN 3, please go to step 3
 directly. Otherwise, follow the detailed steps:
