@@ -21,7 +21,7 @@ In a snapshot:
 
  1. Modify ixa-pipe-ned/pom.xml as specified below.
  2. Compile ixa-pipe-ned module with mvn clean package
- 3. Start Rest server as specified [here](https://github.com/ragerri/ixa-dbpedia-spotlight).
+ 3. Start Rest server as specified [here](https://github.com/ixa-ehu/ixa-dbpedia-spotlight).
  4. cd dbpedia-spotlight/conf
  5. java -jar ../dist/target/dbpedia-spotlight-0.6-jar-with-dependencies.jar
  6. cat ner.kaf | ixa-pipe-ned/target/ixa-pipe-ned-1.0.jar -p $PORT_NUMBER
@@ -75,7 +75,7 @@ You should see reference to the MAVEN version you have just installed plus the J
 
 ### 3. Download the repository
 
-    git clone git@github.com:ragerri/ixa-pipe-ned.git
+    git clone git@github.com:ixa-ehu/ixa-pipe-ned.git
 
 ### 4. Modify pom.xml
 
@@ -84,7 +84,7 @@ Go to the the repository:
     cd ixa-pipe-ned/
 
 And modify the properties element of the pom.xml to point to where the dbpedia-spotlight jar is placed
-as setup by [following these instructions](https://github.com/ragerri/ixa-dbpedia-spotlight):
+as setup by [following these instructions](https://github.com/ixa-ehu/ixa-dbpedia-spotlight):
 
     <properties>
             <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -119,10 +119,10 @@ The port numbers assigned to each language are the following:
     - nl: 2060
 
 If you wanted to change the port numbers, please do so at the corresponding server_$lang.properties
-in the [ixa-dbpedia-spotlight](https://github.com/ragerri/ixa-dbpedia-spotlight) repository. Note that
+in the [ixa-dbpedia-spotlight](https://github.com/ixa-ehu/ixa-dbpedia-spotlight) repository. Note that
 you will also need to change the corresponding server_$lang.properties in `dbpedia-spotlight/conf/` directory.
 
-**Once you have a [DBpedia Spotlight Rest server running](https://github.com/ragerri/ixa-dbpedia-spotlight)** you
+**Once you have a [DBpedia Spotlight Rest server running](https://github.com/ixa-ehu/ixa-dbpedia-spotlight)** you
 can send queries to it via the ixa-pipe-ned module as follows:
 
     cat ner.kaf | java -jar ixa-pipe-ned-1.0.jar -p $PORT_NUMBER
