@@ -77,28 +77,10 @@ You should see reference to the MAVEN version you have just installed plus the J
 
     git clone git@github.com:ixa-ehu/ixa-pipe-ned.git
 
-### 4. Modify pom.xml
 
-Go to the the repository:
+### 4. Install ixa-pipe-ned
 
-    cd ixa-pipe-ned/
-
-And modify the properties element of the pom.xml to point to where the dbpedia-spotlight jar is placed
-as setup by [following these instructions](https://github.com/ixa-ehu/ixa-dbpedia-spotlight):
-
-    <properties>
-            <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-            <!--maven variable which points to your local spotlight -->
-            <internal.path>/home/user/dbpedia-spotlight/dist/target/</internal.path>
-          </properties>
-
-For example, if you installed dbpedia-spotlight in `/home/user/dbpedia-spotlight`, the binary
-dbpedia-spotlight-0.6-jar-with-dependencies.jar directory will correspond to `/home/user/dbpedia-spotlight/dist/target/` as
-specified in the <properties> element above.
-
-### 5. Install ixa-pipe-ned
-
-Once this path is correctly set, install the ixa-pipe-ned module
+Install the ixa-pipe-ned module
 
     mvn clean package
 
@@ -126,6 +108,10 @@ you will also need to change the corresponding server_$lang.properties in `dbped
 can send queries to it via the ixa-pipe-ned module as follows:
 
     cat ner.kaf | java -jar ixa-pipe-ned-1.0.jar -p $PORT_NUMBER
+
+For more options running ixa-pipe-ned
+
+    java -jar ixa-pipe-ned-1.0.jar -h
 
 #### Contact information
 
