@@ -87,7 +87,7 @@ Install the ixa-pipe-ned module
 This command will create a `ixa-pipe-ned/target` directory containing the
 ixa-pipe-ned-1.0.jar binary with all dependencies included.
 
-### 6. ixa-pipe-ned USAGE
+### 5. ixa-pipe-ned USAGE
 
 The ixa-pipe-ned-1.0.jar requires a KAF document containing <entities> elements as standard input and
 provides Named Entity Disambiguation as standard output. It also requires the port number as argument.
