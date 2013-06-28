@@ -19,9 +19,9 @@ The contents of the repository are the following:
 
 In a snapshot:
 
- 1. [Install ixa-dbpedia-spotlight](https://github.com/ixa-ehu/ixa-dbpedia-spotlight)
+ 1. [Install dbpedia-spotlight](https://github.com/ixa-ehu/spotlight-installer)
  2. Compile ixa-pipe-ned module with mvn clean package
- 3. Start Rest server as specified [here](https://github.com/ixa-ehu/ixa-dbpedia-spotlight).
+ 3. Start Rest server as specified [here](https://github.com/ixa-ehu/spotlight-installer).
  4. cd dbpedia-spotlight/conf
  5. java -jar ../dist/target/dbpedia-spotlight-0.6-jar-with-dependencies.jar
  6. cat ner.kaf | ixa-pipe-ned/target/ixa-pipe-ned-1.0.jar -p $PORT_NUMBER
@@ -109,7 +109,7 @@ If you wanted to change the port numbers, please do so at the corresponding serv
 in the [ixa-dbpedia-spotlight](https://github.com/ixa-ehu/ixa-dbpedia-spotlight) repository. Note that
 you will also need to change the corresponding server_$lang.properties in `dbpedia-spotlight/conf/` directory.
 
-**Once you have a [DBpedia Spotlight Rest server running](https://github.com/ixa-ehu/ixa-dbpedia-spotlight)** you
+**Once you have a [DBpedia Spotlight Rest server running](https://github.com/ixa-ehu/-spotlight-installer)** you
 can send queries to it via the ixa-pipe-ned module as follows:
 
     cat ner.kaf | java -jar ixa-pipe-ned-1.0.jar -p $PORT_NUMBER
