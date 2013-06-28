@@ -19,7 +19,7 @@ The contents of the repository are the following:
 
 In a snapshot:
 
- 1. Modify ixa-pipe-ned/pom.xml as specified below.
+ 1. [Install ixa-dbpedia-spotlight](https://github.com/ixa-ehu/ixa-dbpedia-spotlight)
  2. Compile ixa-pipe-ned module with mvn clean package
  3. Start Rest server as specified [here](https://github.com/ixa-ehu/ixa-dbpedia-spotlight).
  4. cd dbpedia-spotlight/conf
@@ -73,12 +73,17 @@ If you re-login into your shell and run the command
 
 You should see reference to the MAVEN version you have just installed plus the JDK 7 that is using.
 
-### 3. Download the repository
+### 3. Go through spotlight-installer
+
+Install dbpedia-spotlight as specified in the [spotlight-installer instructions](https://github.com/ixa-ehu/spotlight-installer)
+
+
+### 4. Download the repository
 
     git clone git@github.com:ixa-ehu/ixa-pipe-ned.git
 
 
-### 4. Install ixa-pipe-ned
+### 5. Install ixa-pipe-ned
 
 Install the ixa-pipe-ned module
 
@@ -87,7 +92,7 @@ Install the ixa-pipe-ned module
 This command will create a `ixa-pipe-ned/target` directory containing the
 ixa-pipe-ned-1.0.jar binary with all dependencies included.
 
-### 5. ixa-pipe-ned USAGE
+### 6. ixa-pipe-ned USAGE
 
 The ixa-pipe-ned-1.0.jar requires a KAF document containing <entities> elements as standard input and
 provides Named Entity Disambiguation as standard output. It also requires the port number as argument.
