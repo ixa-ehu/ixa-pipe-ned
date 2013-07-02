@@ -28,14 +28,14 @@ public class Annotate {
     c = new DBpediaSpotlightClient ();
   }
 
-  public void disambiguateNEsToKAF (KAFDocument kaf, String host, String port) throws Exception { 
+  public void disambiguateNEsToKAF (KAFDocument kaf, String host, String port) throws Exception {
     kaf.addLinguisticProcessor("ehu-ned", "ehu-dbpedia-spotlight", "1.0");
     String annotation = KAF2XMLSpot(kaf);
     Document response = annotate(annotation, host, port);
     XMLSpot2KAF(kaf,response);
   }
 
-  private String KAF2XMLSpot(KAFDocument kaf){ 
+  private String KAF2XMLSpot(KAFDocument kaf){
     /*
 	  <annotation text="Brazilian oil giant Petrobras and U.S. oilfield service company Halliburton have signed a technological cooperation agreement, Petrobras announced Monday. The two companies agreed on three projects: studies on contamination of fluids in oil wells, laboratory simulation of well production, and research on solidification of salt and carbon dioxide formations, said Petrobras. Twelve other projects are still under negotiation.">
 	  <surfaceForm name="oil" offset="10"/>
@@ -90,9 +90,9 @@ public class Annotate {
                 System.out.println("There is not offset for word id " + word.getId());
               }
             }
-          }  
+          }
         }
-        
+
       }
       // Each reference is a spot to disambiguate
       forms += "<surfaceForm name=\"" + entStr + "\" offset=\"" + offset + "\"/>\n";
@@ -122,7 +122,7 @@ public class Annotate {
       if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 
         Element eElement = (Element) nNode;
-        refs.put(new Integer(eElement.getAttribute("offset")),eElement.getAttribute("URI"));		
+        refs.put(new Integer(eElement.getAttribute("offset")),eElement.getAttribute("URI"));
 
       }
     }
@@ -136,7 +136,7 @@ public class Annotate {
       if (refs.containsKey(offset)){
         String reference = refs.get(offset);
         // Create ExternalRef
-        ExternalRef externalRef = kaf.createExternalRef(resource,reference);	    
+        ExternalRef externalRef = kaf.createExternalRef(resource,reference);
         // addExternalRef to Entity
         entity.addExternalRef(externalRef);
       }
