@@ -1,11 +1,14 @@
 package ixa.pipe.ned;
 
 import ixa.kaflib.KAFDocument;
+import ixa.kaflib.Entity;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+
+import java.util.List;
 
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
@@ -66,7 +69,11 @@ public class CLI {
 		stdInReader = new BufferedReader(new InputStreamReader(System.in,"UTF-8"));
 		w = new BufferedWriter(new OutputStreamWriter(System.out,"UTF-8"));
 		KAFDocument kaf = KAFDocument.createFromStream(stdInReader);
-		annotator.disambiguateNEsToKAF(kaf, host, port);
+
+		List<Entity> entities = kaf.getEntities();
+		if (!entities.isEmpty()){
+		    annotator.disambiguateNEsToKAF(kaf, host, port);
+		}
 		w.write(kaf.toString());
 		w.close();
 	    } 

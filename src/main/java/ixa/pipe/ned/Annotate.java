@@ -23,17 +23,162 @@ import org.w3c.dom.Element;
 
 public class Annotate {
 
+
+
   DBpediaSpotlightClient c;
   public Annotate(){
     c = new DBpediaSpotlightClient ();
   }
 
   public void disambiguateNEsToKAF (KAFDocument kaf, String host, String port) throws Exception {
-    kaf.addLinguisticProcessor("ehu-ned", "ehu-dbpedia-spotlight", "1.0");
+
+      String lang = kaf.getLang();
+      //    kaf.addLinguisticProcessor("entities", "ixa-pipe-spotlight", "1.0");
+    kaf.addLinguisticProcessor("entities", "ixa-pipe-ned-" + lang, "1.0");
+
+    String text = KAF2XMLText(kaf);    
+    List<Entity> entities = kaf.getEntities();
+    int pos = 0;
+    int max = entities.size();
+    int set = 0;
+    if (max < 100){
+	set = max;
+    }
+    else{
+	set = 100;
+    }
+    while (pos < max){
+	// disambiguate entities, 100 each time. 
+	String entityAnnotation = surfaceForm(entities,pos,set);
+	String annotation = spotAnnotation(text,entityAnnotation);
+	Document response = annotate(annotation, host, port);
+	XMLSpot2KAF(kaf,response);
+	pos = set;
+	set+=100;
+	if (max < set){
+	    set = max;
+	}
+    }
+    /*
     String annotation = KAF2XMLSpot(kaf);
     Document response = annotate(annotation, host, port);
     XMLSpot2KAF(kaf,response);
+    */
   }
+
+    private String KAF2XMLText(KAFDocument kaf){
+	String text = "";
+	List<List<WF>> sentences = kaf.getSentences();
+	for (List<WF> sentence : sentences) {
+	    for (int i = 0; i < sentence.size(); i++) {
+		if (!text.isEmpty()) {
+		    text += " ";
+		}
+		String tok = sentence.get(i).getForm();
+		
+		//quot  "
+		//amp   &
+		//apos  '
+		//lt    <
+		//gt    >
+
+		tok = tok.replaceAll( "&([^;]+(?!(?:\\w|;)))", "&amp;$1" );
+
+		
+		if (tok.contains("\"")){
+		    tok = tok.replaceAll("\"","'");
+		}
+		
+		if (tok.matches("&")) { 
+		    tok = tok.replaceAll("&","amper");
+		}
+		
+		
+		if (tok.matches("<")){
+		    tok = tok.replaceAll("<","&lt;");
+		}
+		
+		if (tok.matches(">")){
+		    tok = tok.replaceAll("<","&gt;");
+		}
+		
+
+		if (!tok.matches("http.*")){
+		    text += tok;
+		}
+	    }
+	}
+	return text;
+    }
+
+
+    private String surfaceForm(List<Entity> entities, int start, int end){
+        int offset = -1;
+	String entStr = "";
+	String forms = "";
+	
+	List<Entity> entitySet = entities.subList(start,end);
+	for (Entity entity : entitySet){
+	    List<List<Term>> references = entity.getReferences();
+	    for (List<Term> ref : references){
+		offset = -1;
+		// TODO: Careful! We are only using the last value of this variable in the forms variable below!!
+		entStr = "";
+		for (Term t: ref){
+		    List<WF> words = t.getWFs();
+		    for (int i = 0; i < words.size(); i++){
+			if (!entStr.isEmpty()){
+			    entStr += " ";
+			}
+			WF word = words.get(i);
+			entStr += word.getForm();
+			if (offset == -1){
+			    if (word.hasOffset()){
+				offset = word.getOffset();
+			    }
+			    else{
+				System.out.println("There is not offset for word id " + word.getId());
+			    }
+			}
+		    }
+		}
+		
+	    }
+	    // Each reference is a spot to disambiguate
+	    entStr = entStr.replaceAll( "&([^;]+(?!(?:\\w|;)))", "&amp;$1" );
+
+	    if (entStr.contains("\"")){
+		entStr = entStr.replaceAll("\"","'");
+	    }
+
+	    /*
+	    if (entStr.matches(".*&(?![A-Za-z]+;|#[0-9]+;).*")) { 
+		entStr = entStr.replaceAll("&","amper");
+	    }
+	    */
+	    /*	    	    
+	    if (entStr.matches("&")) { 
+		entStr = entStr.replaceAll("&","amper");
+		}*/
+	    
+	    if (entStr.contains("<")){
+		entStr = entStr.replaceAll("<","&lt;");
+	    }
+	    
+	    if (entStr.contains(">")){
+		entStr = entStr.replaceAll("<","&gt;");
+	    }
+		
+
+	    forms += "<surfaceForm name=\"" + entStr + "\" offset=\"" + offset + "\"/>\n";
+	}
+	return forms;
+    }
+
+    private String spotAnnotation(String text,String forms){
+	String annotation = "<annotation text=\"" + text + "\">\n" + forms + "</annotation>";
+	return annotation;
+    }
 
   private String KAF2XMLSpot(KAFDocument kaf){
     /*
@@ -54,12 +199,24 @@ public class Annotate {
           text += " ";
         }
         String tok = sentence.get(i).getForm();
+
+	//quot  "
+	//amp   &
+	//apos  '
+	//lt    <
+	//gt    >
         if (tok.contains("\"")){
           tok = tok.replaceAll("\"","'");
         }
         if (tok.matches("&")) { 
         	tok = tok.replaceAll("&","amper");
         }
+	if (tok.matches("<")){
+	    tok = tok.replaceAll("<","&lt;");
+	}
+	if (tok.matches(">")){
+	    tok = tok.replaceAll("<","&gt;");
+	}
         text += tok;
       }
     }
@@ -95,6 +252,12 @@ public class Annotate {
 
       }
       // Each reference is a spot to disambiguate
+      if (entStr.contains("\"")){
+          entStr = entStr.replaceAll("\"","'");
+      }
+      if (entStr.matches(".*&(?![A-Za-z]+;|#[0-9]+;).*")) { 
+	  entStr = entStr.replaceAll("&","amper");
+      }
       forms += "<surfaceForm name=\"" + entStr + "\" offset=\"" + offset + "\"/>\n";
     }
 
