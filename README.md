@@ -2,29 +2,28 @@
 
 This repository contains the Named Entity Disambiguation tool based on DBpedia Spotlight.
 Providing that a DBpedia Spotlight Rest server for a given language is running, the ixa-pipe-ned module will take
-KAF as input (containing <entities> elements) and perform Named Entity Disambiguation
+KAF or NAF as input (containing <entities> elements) and perform Named Entity Disambiguation
 for your language of choice.
 
-Developed by IXA NLP Group (ixa.si.ehu.es) for the 7th Framework OpeNER European project.
+Developed by IXA NLP Group (ixa.si.ehu.es) for the 7th Framework OpeNER and NewsReader European projects.
 
 ### Contents
 
 The contents of the repository are the following:
 
     + src/ source files of ixa-pipe-ned
-    + pom.xml modified pom.xml to install DBpedia Spotlight
+    + pom.xml 
+    + pom-naf.xml
     + README.md: This README
 
 ## Installation Procedure
 
 In a snapshot:
 
- 1. [Install dbpedia-spotlight](https://github.com/ixa-ehu/spotlight-installer)
+ 1. Install dbpedia-spotlight
  2. Compile ixa-pipe-ned module with mvn clean package
- 3. Start Rest server as specified [here](https://github.com/ixa-ehu/spotlight-installer).
- 4. cd dbpedia-spotlight/conf
- 5. java -jar ../dist/target/dbpedia-spotlight-0.6-jar-with-dependencies.jar
- 6. cat ner.kaf | ixa-pipe-ned/target/ixa-pipe-ned-1.0.jar -p $PORT_NUMBER
+ 3. Start dbpedia-spotlight server
+ 4. cat ner.kaf | ixa-pipe-ned/target/ixa-pipe-ned-1.0.jar -p $PORT_NUMBER
 
 If you already have installed in your machine JDK7 and MAVEN 3, please go to step 3
 directly. Otherwise, follow the detailed steps:
@@ -73,12 +72,31 @@ If you re-login into your shell and run the command
 
 You should see reference to the MAVEN version you have just installed plus the JDK 7 that is using.
 
-### 3. Go through spotlight-installer
+### 3. Download statistical backend - dbpedia spotlight
 
-Install dbpedia-spotlight as specified in the [spotlight-installer instructions](https://github.com/ixa-ehu/spotlight-installer)
+Downloand from http://spotlight.sztaki.hu/downloads/
+- dbpedia-spotlight.jar
+- German model: de.tar.gz
+- English model: en.tar.gz or en_small.tar.gz
+- Spanish model: es.tar.gz	
+- French model: fr.tar.gz
+- Italian model: it.tar.gz
+- Dutch model: nl.tar.gz
+
+Decompressed the language models 
+- tar xvf $lang.tar.gz
+
+Install dbpedia-spotlight
+- go to the directory the dbpedia-spotlight.jar is located
+- execute:
+  mvn install:install-file -Dfile=dbpedia-spotlight.jar -DgroupId=ixa -DartifactId=dbpedia-spotlight -Dversion=0.6 -Dpackaging=jar -DgeneratePom=true
+  This command will install dbpedia-spotlight jar as a local maven repository
+
+Start the application
+- java -jar dbpedia-spotlight.jar $lang http://localhost:$port/rest 
 
 
-### 4. Download the repository
+### 4. Download the ixa-pipe-ned repository
 
     git clone git@github.com:ixa-ehu/ixa-pipe-ned.git
 
@@ -87,14 +105,20 @@ Install dbpedia-spotlight as specified in the [spotlight-installer instructions]
 
 Install the ixa-pipe-ned module
 
+To work with KAF files
+
     mvn clean package
+
+To work with NAF files
+
+   mvn -f pom-naf.xml clean package
 
 This command will create a `ixa-pipe-ned/target` directory containing the
 ixa-pipe-ned-1.0.jar binary with all dependencies included.
 
 ### 6. ixa-pipe-ned USAGE
 
-The ixa-pipe-ned-1.0.jar requires a KAF document containing <entities> elements as standard input and
+The ixa-pipe-ned-1.0.jar requires a KAF or NAF document containing <entities> elements as standard input and
 provides Named Entity Disambiguation as standard output. It also requires the port number as argument.
 The port numbers assigned to each language are the following:
 
@@ -105,12 +129,7 @@ The port numbers assigned to each language are the following:
     - it: 2050
     - nl: 2060
 
-If you wanted to change the port numbers, please do so at the corresponding server_$lang.properties
-in the [ixa-dbpedia-spotlight](https://github.com/ixa-ehu/ixa-dbpedia-spotlight) repository. Note that
-you will also need to change the corresponding server_$lang.properties in `dbpedia-spotlight/conf/` directory.
-
-**Once you have a [DBpedia Spotlight Rest server running](https://github.com/ixa-ehu/-spotlight-installer)** you
-can send queries to it via the ixa-pipe-ned module as follows:
+**Once you have a DBpedia Spotlight Rest server running you can send queries to it via the ixa-pipe-ned module as follows:
 
     cat ner.kaf | java -jar ixa-pipe-ned-1.0.jar -p $PORT_NUMBER
 
