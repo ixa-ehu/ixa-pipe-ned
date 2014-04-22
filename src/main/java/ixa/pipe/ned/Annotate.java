@@ -32,9 +32,9 @@ public class Annotate {
 
   public void disambiguateNEsToKAF (KAFDocument kaf, String host, String port) throws Exception {
 
-      String lang = kaf.getLang();
-      //    kaf.addLinguisticProcessor("entities", "ixa-pipe-spotlight", "1.0");
-    kaf.addLinguisticProcessor("entities", "ixa-pipe-ned-" + lang, "1.0");
+      // String lang = kaf.getLang();
+      // KAFDocument.LinguisticProcessor lp = kaf.addLinguisticProcessor("entities", "ixa-pipe-ned-" + lang, "1.0");
+      // lp.setBeginTimestamp();
 
     String text = KAF2XMLText(kaf);    
     List<Entity> entities = kaf.getEntities();

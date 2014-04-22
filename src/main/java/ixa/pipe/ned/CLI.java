@@ -70,10 +70,15 @@ public class CLI {
 		w = new BufferedWriter(new OutputStreamWriter(System.out,"UTF-8"));
 		KAFDocument kaf = KAFDocument.createFromStream(stdInReader);
 
+		String lang = kaf.getLang();
+		KAFDocument.LinguisticProcessor lp = kaf.addLinguisticProcessor("entities", "ixa-pipe-ned-" + lang, "1.0");
+		lp.setBeginTimestamp();
+
 		List<Entity> entities = kaf.getEntities();
 		if (!entities.isEmpty()){
 		    annotator.disambiguateNEsToKAF(kaf, host, port);
 		}
+		lp.setEndTimestamp();
 		w.write(kaf.toString());
 		w.close();
 	    } 
