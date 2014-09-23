@@ -7,8 +7,7 @@
   <version>1.0</version>
   <description>ixa-pipe-ned is part of IXA-pipeline and performs Named Entity Disambiguation based on DBpedia Spotlight.
     In principle the pipeline is available for the annotation of English and Spanish texts, but it can be easily extended to
-    deal with other languages too. All models have been trained by the IXA NLP Group of the University of the
-    Basque Country (ixa.si.ehu.es).</description>
+    deal with other languages too.</description>
   <url>http://maven.apache.org</url>
   <prerequisites>
     <maven>3.0</maven>
@@ -60,6 +59,10 @@
       </snapshots>
       <id>ixa-ehu.github</id>
       <url>https://raw.github.com/ixa-ehu/kaflib-mvn-repo/master</url>
+    </repository>
+    <repository>
+      <id>sonatype-snapshots</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </repository>
   </repositories>
   <dependencies>

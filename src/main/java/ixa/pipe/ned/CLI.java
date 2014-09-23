@@ -38,6 +38,9 @@ public class CLI {
 
         parser.addArgument("-H", "--host").setDefault("http://localhost").help("Choose hostname in which dbpedia-spotlight rest " +
         		"server is being executed; this value defaults to 'http://localhost'");
+	parser.addArgument("-e", "--endpoint").setDefault("disambiguate");
+	parser.addArgument("-i", "--index").setDefault("none");
+	parser.addArgument("-n", "--name").setDefault("none");
         
         /*
          * Parse the command line arguments
@@ -57,30 +60,41 @@ public class CLI {
          * Load port and host parameters; host defaults to http://localhost
          */
 
-        String port = parsedArguments.getString("port");
-        String host = parsedArguments.getString("host");
-
-    	Annotate annotator = new Annotate();
-		// Input
-		BufferedReader stdInReader = null;
-		// Output
-		BufferedWriter w = null;
-
-		stdInReader = new BufferedReader(new InputStreamReader(System.in,"UTF-8"));
-		w = new BufferedWriter(new OutputStreamWriter(System.out,"UTF-8"));
-		KAFDocument kaf = KAFDocument.createFromStream(stdInReader);
-
-		String lang = kaf.getLang();
-		KAFDocument.LinguisticProcessor lp = kaf.addLinguisticProcessor("entities", "ixa-pipe-ned-" + lang, "1.0");
-		lp.setBeginTimestamp();
-
-		List<Entity> entities = kaf.getEntities();
-		if (!entities.isEmpty()){
-		    annotator.disambiguateNEsToKAF(kaf, host, port);
-		}
-		lp.setEndTimestamp();
-		w.write(kaf.toString());
-		w.close();
-	    } 
+	String port = parsedArguments.getString("port");
+	String host = parsedArguments.getString("host");
+	String endpoint = parsedArguments.getString("endpoint");
+	String index = parsedArguments.getString("index");
+	String hashName = parsedArguments.getString("name");
+	
+	Annotate annotator = new Annotate(index,hashName);
+	// Input
+	BufferedReader stdInReader = null;
+	// Output
+	BufferedWriter w = null;
+	
+	stdInReader = new BufferedReader(new InputStreamReader(System.in,"UTF-8"));
+	w = new BufferedWriter(new OutputStreamWriter(System.out,"UTF-8"));
+	KAFDocument kaf = KAFDocument.createFromStream(stdInReader);
+	
+	String lang = kaf.getLang();
+	KAFDocument.LinguisticProcessor lp = kaf.addLinguisticProcessor("entities", "ixa-pipe-ned-" + lang, "1.0");
+	lp.setBeginTimestamp();
+	try {	    
+	    List<Entity> entities = kaf.getEntities();
+	    if (!entities.isEmpty()){
+		//annotator.disambiguateNEsToKAF(kaf, host, port);
+		annotator.disambiguateNEsToKAF(kaf, host, port, endpoint);
+	    }
+	}
+	catch (Exception e){
+	      System.err.println("Disambiguation failed: ");
+	      e.printStackTrace();
+	}
+	finally {
+	    lp.setEndTimestamp();
+	    w.write(kaf.toString());
+	    w.close();
+	}
+    }
 
 }

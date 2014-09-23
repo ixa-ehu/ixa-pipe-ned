@@ -21,20 +21,28 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 
+import  java.net.URLEncoder;
+
 public class Annotate {
 
-
-
   DBpediaSpotlightClient c;
-  public Annotate(){
-    c = new DBpediaSpotlightClient ();
+    boolean multiple = false;
+    DictManager wikiIndex;
+    String index;
+    String hashName;
+
+    public Annotate(String index,String hashName){
+	c = new DBpediaSpotlightClient ();
+	if (!index.equals("none")){
+	    wikiIndex = new DictManager(index,hashName);
+	    multiple = true;
+	    this.index = index;
+	    this.hashName = hashName;
+    }
+    
   }
 
-  public void disambiguateNEsToKAF (KAFDocument kaf, String host, String port) throws Exception {
-
-      // String lang = kaf.getLang();
-      // KAFDocument.LinguisticProcessor lp = kaf.addLinguisticProcessor("entities", "ixa-pipe-ned-" + lang, "1.0");
-      // lp.setBeginTimestamp();
+  public void disambiguateNEsToKAF (KAFDocument kaf, String host, String port, String endpoint) throws Exception {
 
     String text = KAF2XMLText(kaf);    
     List<Entity> entities = kaf.getEntities();
@@ -51,7 +59,7 @@ public class Annotate {
 	// disambiguate entities, 100 each time. 
 	String entityAnnotation = surfaceForm(entities,pos,set);
 	String annotation = spotAnnotation(text,entityAnnotation);
-	Document response = annotate(annotation, host, port);
+	Document response = annotate(annotation, host, port, endpoint);
 	XMLSpot2KAF(kaf,response);
 	pos = set;
 	set+=100;
@@ -59,11 +67,6 @@ public class Annotate {
 	    set = max;
 	}
     }
-    /*
-    String annotation = KAF2XMLSpot(kaf);
-    Document response = annotate(annotation, host, port);
-    XMLSpot2KAF(kaf,response);
-    */
   }
 
     private String KAF2XMLText(KAFDocument kaf){
@@ -81,16 +84,14 @@ public class Annotate {
 		//apos  '
 		//lt    <
 		//gt    >
-
 		tok = tok.replaceAll( "&([^;]+(?!(?:\\w|;)))", "&amp;$1" );
-
 		
 		if (tok.contains("\"")){
 		    tok = tok.replaceAll("\"","'");
 		}
 		
 		if (tok.matches("&")) { 
-		    tok = tok.replaceAll("&","amper");
+		    tok = tok.replaceAll("&","&amp;");
 		}
 		
 		
@@ -102,7 +103,6 @@ public class Annotate {
 		    tok = tok.replaceAll("<","&gt;");
 		}
 		
-
 		if (!tok.matches("http.*")){
 		    text += tok;
 		}
@@ -131,7 +131,30 @@ public class Annotate {
 			    entStr += " ";
 			}
 			WF word = words.get(i);
-			entStr += word.getForm();
+
+			String tok = word.getForm();
+			tok = tok.replaceAll( "&([^;]+(?!(?:\\w|;)))", "&amp;$1" );
+		
+			if (tok.contains("\"")){
+			    tok = tok.replaceAll("\"","'");
+			}
+			
+			if (tok.matches("&")) { 
+			    tok = tok.replaceAll("&","&amp;");
+			}
+			
+			if (tok.matches("<")){
+			    tok = tok.replaceAll("<","&lt;");
+			}
+			
+			if (tok.matches(">")){
+			    tok = tok.replaceAll("<","&gt;");
+			}
+			
+			if (!tok.matches("http.*")){
+			    entStr += tok;
+			}
+
 			if (offset == -1){
 			    if (word.hasOffset()){
 				offset = word.getOffset();
@@ -144,39 +167,15 @@ public class Annotate {
 		}
 		
 	    }
-	    // Each reference is a spot to disambiguate
-	    entStr = entStr.replaceAll( "&([^;]+(?!(?:\\w|;)))", "&amp;$1" );
-
-	    if (entStr.contains("\"")){
-		entStr = entStr.replaceAll("\"","'");
-	    }
-
-	    /*
-	    if (entStr.matches(".*&(?![A-Za-z]+;|#[0-9]+;).*")) { 
-		entStr = entStr.replaceAll("&","amper");
-	    }
-	    */
-	    /*	    	    
-	    if (entStr.matches("&")) { 
-		entStr = entStr.replaceAll("&","amper");
-		}*/
-	    
-	    if (entStr.contains("<")){
-		entStr = entStr.replaceAll("<","&lt;");
-	    }
-	    
-	    if (entStr.contains(">")){
-		entStr = entStr.replaceAll("<","&gt;");
-	    }
-		
-
 	    forms += "<surfaceForm name=\"" + entStr + "\" offset=\"" + offset + "\"/>\n";
 	}
 	return forms;
     }
 
-    private String spotAnnotation(String text,String forms){
-	String annotation = "<annotation text=\"" + text + "\">\n" + forms + "</annotation>";
+    private String spotAnnotation(String text,String forms) throws Exception{
+	//String annotation = "<annotation text=\"" + text + "\">\n" + forms + "</annotation>";
+	String annotation = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+	annotation += "<annotation text=\"" + text + "\">\n" + forms + "</annotation>";
 	return annotation;
     }
 
@@ -265,15 +264,15 @@ public class Annotate {
     return annotation;
   }
 
-  private Document annotate(String annotation, String host, String port) throws AnnotationException {
-    Document response = c.extract(new Text(annotation), host, port);
+  private Document annotate(String annotation, String host, String port, String endpoint) throws AnnotationException {
+      Document response = c.extract(new Text(annotation), host, port, endpoint);
     return response;
   }
+
 
   private void XMLSpot2KAF(KAFDocument kaf, Document doc){
     // Store the References into a hash. Key: offset
     HashMap<Integer,String> refs = new HashMap<Integer,String>();
-
 
     doc.getDocumentElement().normalize();
     NodeList nList = doc.getElementsByTagName("Resource");
@@ -302,8 +301,20 @@ public class Annotate {
         ExternalRef externalRef = kaf.createExternalRef(resource,reference);
         // addExternalRef to Entity
         entity.addExternalRef(externalRef);
+	if (multiple){
+	    System.out.println("if barruan");
+	    String indexResource = index + "-" + hashName;
+	    System.out.println(reference);
+	    String indexRef = getIndexRef(reference);
+	    System.out.println(indexRef);
+	    if (indexRef != null){
+		ExternalRef wikiRef = kaf.createExternalRef(indexResource,indexRef);
+		entity.addExternalRef(wikiRef);
+	    }
+	}
       }
     }
+    
   }
 
   private int getEntityOffset(Entity ent){
@@ -321,5 +332,18 @@ public class Annotate {
       }
     }
     return offset;
+  }
+
+  private String getIndexRef(String ref){
+      String[] info = ref.split("/");
+      int pos = info.length - 1;
+      String entry = info[pos];
+      System.out.println(entry);
+      String url = "http://dbpedia.org/resource/";
+      String value = wikiIndex.getValue(entry);
+      if (value != null){
+	  return url + value;
+      }
+      return null;
   }
 }

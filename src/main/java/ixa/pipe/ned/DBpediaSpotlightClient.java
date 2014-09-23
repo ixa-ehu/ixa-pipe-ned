@@ -26,11 +26,16 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 import org.dbpedia.spotlight.exceptions.AnnotationException;
 import org.dbpedia.spotlight.model.Text;
+import org.dbpedia.spotlight.model.DBpediaResource;
 
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import org.w3c.dom.Document;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -40,7 +45,12 @@ import org.xml.sax.InputSource;
 
 import org.apache.log4j.Logger;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
+ * class based on:
  * Simple web service-based annotation client for DBpedia Spotlight.
  *
  * @author pablomendes, Joachim Daiber
@@ -123,32 +133,37 @@ Petrobras" offset="365"/><surfaceForm name="Twelve" offset="376"/>
 offset="414"/></annotation>
      */
 
-    public Document extract(Text text, String host, String port) throws AnnotationException{
+
+
+
+    public Document extract(Text text, String host, String port, String endpoint) throws AnnotationException{
+
+
 
         LOG.info("Querying API.");
-		String spotlightResponse = "";
-		Document doc = null;
-		try {
-		    String url = host + ":" + port +"/rest/disambiguate";
-		    PostMethod method = new PostMethod(url);
-		    //method.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    		String spotlightResponse = "";
+    		Document doc = null;
+    		try {
+		    String url = host + ":" + port +"/rest/" + endpoint;
+
+    		    PostMethod method = new PostMethod(url);
+    		    //method.setRequestHeader("Content-type","application/x-www-form-urlencoded");
                     method.setRequestHeader("Content-Type","application/x-www-form-urlencoded;charset=utf-8");
-		    NameValuePair[] params = {new NameValuePair("text",text.text()), new NameValuePair("spotter","SpotXmlParser"), new NameValuePair("confidence",Double.toString(CONFIDENCE)), new NameValuePair("support",Integer.toString(SUPPORT))};
-		    method.setRequestBody(params);
-		    method.setRequestHeader(new Header("Accept", "text/xml"));
-		    spotlightResponse = request(method);
-		    doc = loadXMLFromString(spotlightResponse);
-		}
-		catch (javax.xml.parsers.ParserConfigurationException ex) {
-		}
-		catch (org.xml.sax.SAXException ex) {
-		}
-		catch (java.io.IOException ex) {
-		}
+    		    NameValuePair[] params = {new NameValuePair("text",text.text()), new NameValuePair("spotter","SpotXmlParser"), new NameValuePair("confidence",Double.toString(CONFIDENCE)), new NameValuePair("support",Integer.toString(SUPPORT))};
+    		    method.setRequestBody(params);
+    		    method.setRequestHeader(new Header("Accept", "text/xml"));
+    		    spotlightResponse = request(method);
+    		    doc = loadXMLFromString(spotlightResponse);
+    		}
+    		catch (javax.xml.parsers.ParserConfigurationException ex) {
+    		}
+    		catch (org.xml.sax.SAXException ex) {
+    		}
+    		catch (java.io.IOException ex) {
+    		}
 
-		return doc;
-	}
-
+    		return doc;
+    	}
     public static Document loadXMLFromString(String xml)  throws org.xml.sax.SAXException, java.io.IOException, javax.xml.parsers.ParserConfigurationException
     {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
