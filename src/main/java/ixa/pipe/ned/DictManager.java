@@ -16,7 +16,6 @@ public class DictManager{
     }
 
     public String getValue(String id){
-	System.out.println(id);
 	return map.get(id);
     }
     

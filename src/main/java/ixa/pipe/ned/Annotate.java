@@ -302,11 +302,8 @@ public class Annotate {
         // addExternalRef to Entity
         entity.addExternalRef(externalRef);
 	if (multiple){
-	    System.out.println("if barruan");
 	    String indexResource = index + "-" + hashName;
-	    System.out.println(reference);
 	    String indexRef = getIndexRef(reference);
-	    System.out.println(indexRef);
 	    if (indexRef != null){
 		ExternalRef wikiRef = kaf.createExternalRef(indexResource,indexRef);
 		entity.addExternalRef(wikiRef);
@@ -338,7 +335,6 @@ public class Annotate {
       String[] info = ref.split("/");
       int pos = info.length - 1;
       String entry = info[pos];
-      System.out.println(entry);
       String url = "http://dbpedia.org/resource/";
       String value = wikiIndex.getValue(entry);
       if (value != null){

@@ -82,7 +82,6 @@ public class CLI {
 	try {	    
 	    List<Entity> entities = kaf.getEntities();
 	    if (!entities.isEmpty()){
-		//annotator.disambiguateNEsToKAF(kaf, host, port);
 		annotator.disambiguateNEsToKAF(kaf, host, port, endpoint);
 	    }
 	}
