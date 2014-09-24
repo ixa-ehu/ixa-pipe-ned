@@ -75,9 +75,9 @@ You should see reference to the MAVEN version you have just installed plus the J
 ### 3. Download statistical backend - dbpedia spotlight
 
 Downloand from http://spotlight.sztaki.hu/downloads/
-- dbpedia-spotlight.jar
+- dbpedia-spotlight-0.7.jar
 - German model: de.tar.gz
-- English model: en.tar.gz or en_small.tar.gz
+- English model: en_2+2.tar.gz 
 - Spanish model: es.tar.gz	
 - French model: fr.tar.gz
 - Italian model: it.tar.gz
@@ -89,11 +89,13 @@ Decompressed the language models
 Install dbpedia-spotlight
 - go to the directory the dbpedia-spotlight.jar is located
 - execute:
-  mvn install:install-file -Dfile=dbpedia-spotlight.jar -DgroupId=ixa -DartifactId=dbpedia-spotlight -Dversion=0.6 -Dpackaging=jar -DgeneratePom=true
+  mvn install:install-file -Dfile=dbpedia-spotlight-0.7.jar -DgroupId=ixa -DartifactId=dbpedia-spotlight -Dversion=0.7 -Dpackaging=jar -DgeneratePom=true
   This command will install dbpedia-spotlight jar as a local maven repository
 
 Start the application
-- java -jar dbpedia-spotlight.jar $lang http://localhost:$port/rest 
+- java -jar dbpedia-spotlight-0.7.jar $lang http://localhost:$port/rest 
+
+  note: When working with English, the $lang variable refers to en_2+2 
 
 
 ### 4. Download the ixa-pipe-ned repository
@@ -105,20 +107,15 @@ Start the application
 
 Install the ixa-pipe-ned module
 
-To work with KAF files
-
     mvn clean package
 
-To work with NAF files
-
-   mvn -f pom-naf.xml clean package
 
 This command will create a `ixa-pipe-ned/target` directory containing the
 ixa-pipe-ned-1.0.jar binary with all dependencies included.
 
 ### 6. ixa-pipe-ned USAGE
 
-The ixa-pipe-ned-1.0.jar requires a KAF or NAF document containing <entities> elements as standard input and
+The ixa-pipe-ned-1.0.jar requires a NAF document containing <entities> elements as standard input and
 provides Named Entity Disambiguation as standard output. It also requires the port number as argument.
 The port numbers assigned to each language are the following:
 
