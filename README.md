@@ -2,7 +2,7 @@
 
 This repository contains the Named Entity Disambiguation tool based on DBpedia Spotlight.
 Providing that a DBpedia Spotlight Rest server for a given language is running, the ixa-pipe-ned module will take
-KAF or NAF as input (containing <entities> elements) and perform Named Entity Disambiguation
+NAF or KAF as input (containing <entities> elements) and perform Named Entity Disambiguation
 for your language of choice.
 
 Developed by IXA NLP Group (ixa.si.ehu.es) for the 7th Framework OpeNER and NewsReader European projects.
@@ -23,7 +23,7 @@ In a snapshot:
  1. Install dbpedia-spotlight
  2. Compile ixa-pipe-ned module with mvn clean package
  3. Start dbpedia-spotlight server
- 4. cat ner.kaf | ixa-pipe-ned/target/ixa-pipe-ned-1.0.jar -p $PORT_NUMBER
+ 4. cat ner.naf | ixa-pipe-ned/target/ixa-pipe-ned-1.0.jar -p $PORT_NUMBER
 
 If you already have installed in your machine JDK7 and MAVEN 3, please go to step 3
 directly. Otherwise, follow the detailed steps:
@@ -128,7 +128,26 @@ The port numbers assigned to each language are the following:
 
 **Once you have a DBpedia Spotlight Rest server running you can send queries to it via the ixa-pipe-ned module as follows:
 
-    cat ner.kaf | java -jar ixa-pipe-ned-1.0.jar -p $PORT_NUMBER
+    cat ner.naf | java -jar ixa-pipe-ned-1.0.jar -p $PORT_NUMBER
+
+### 7. ixa-pipe-ned SPECIAL USAGE
+
+When the language is other than English, the module offers an
+additional feature. It is possible to set the corresponding English entry. To execute this option:
+
+    cat ner.naf | java -jar ixa-pipe-ned-1.0.jar -p $PORT_NUMBER -i $INDEX -n $NAME
+
+    $INDEX is the name of the 'database' created by MapDB (http://www.mapdb.org/)
+    $NAME is the name of the HashMap that the module uses
+
+So far, we can download wikipedia-db.tgz package, which contains the
+required resources for Spanish. In this particular distribution, the $INDEX is 'wikipedia-db' and the $NAME is 'esEn':
+
+    cat ner.naf | java -jar ixa-pipe-ned-1.0.jar -p 2030 -i wikipedia-db -n esEn
+
+It is possible to use new Maps, if they are created using MapDB. The
+two elements of the HashMap have to be Strings, delimited by a tab. 
+
 
 For more options running ixa-pipe-ned
 
