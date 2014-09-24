@@ -273,6 +273,7 @@ public class Annotate {
   private void XMLSpot2KAF(KAFDocument kaf, Document doc){
     // Store the References into a hash. Key: offset
     HashMap<Integer,String> refs = new HashMap<Integer,String>();
+    HashMap<Integer, Float> confs = new HashMap<Integer,Float>();
 
     doc.getDocumentElement().normalize();
     NodeList nList = doc.getElementsByTagName("Resource");
@@ -285,7 +286,7 @@ public class Annotate {
 
         Element eElement = (Element) nNode;
         refs.put(new Integer(eElement.getAttribute("offset")),eElement.getAttribute("URI"));
-
+	confs.put(new Integer(eElement.getAttribute("offset")),Float.valueOf(eElement.getAttribute("similarityScore")));
       }
     }
 
@@ -299,6 +300,8 @@ public class Annotate {
         String reference = refs.get(offset);
         // Create ExternalRef
         ExternalRef externalRef = kaf.createExternalRef(resource,reference);
+	externalRef.setConfidence(confs.get(offset));
+		
         // addExternalRef to Entity
         entity.addExternalRef(externalRef);
 	if (multiple){
