@@ -140,7 +140,7 @@ additional feature. It is possible to set the corresponding English entry. To ex
     $INDEX is the name of the 'database' created by MapDB (http://www.mapdb.org/)
     $NAME is the name of the HashMap that the module uses
 
-So far, we can download [wikipedia-db.tar.gz](http://ixa2.si.ehu.es/ixa-pipes/models/nerc-resources.tgz) package, which contains the
+So far, we can download [wikipedia-db.tar.gz](http://ixa2.si.ehu.es/ixa-pipes/models/wikipedia-db.tar.gz) package, which contains the
 required resources for Spanish. In this particular distribution, the $INDEX is 'wikipedia-db' and the $NAME is 'esEn':
 
     cat ner.naf | java -jar ixa-pipe-ned-1.0.jar -p 2030 -i wikipedia-db -n esEn
