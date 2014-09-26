@@ -61,6 +61,7 @@ public class DBpediaSpotlightClient {
 
     private static final double CONFIDENCE = 0.0;
     private static final int SUPPORT = 0;
+    private static final boolean COREFERENCE = false;
 
     // Create an instance of HttpClient.
     private static HttpClient client = new HttpClient();
@@ -149,7 +150,7 @@ offset="414"/></annotation>
     		    PostMethod method = new PostMethod(url);
     		    //method.setRequestHeader("Content-type","application/x-www-form-urlencoded");
                     method.setRequestHeader("Content-Type","application/x-www-form-urlencoded;charset=utf-8");
-    		    NameValuePair[] params = {new NameValuePair("text",text.text()), new NameValuePair("spotter","SpotXmlParser"), new NameValuePair("confidence",Double.toString(CONFIDENCE)), new NameValuePair("support",Integer.toString(SUPPORT))};
+    		    NameValuePair[] params = {new NameValuePair("text",text.text()), new NameValuePair("spotter","SpotXmlParser"), new NameValuePair("confidence",Double.toString(CONFIDENCE)), new NameValuePair("support",Integer.toString(SUPPORT)), new NameValuePair("coreferenceResolution",Boolean.toString(COREFERENCE))};
     		    method.setRequestBody(params);
     		    method.setRequestHeader(new Header("Accept", "text/xml"));
     		    spotlightResponse = request(method);
