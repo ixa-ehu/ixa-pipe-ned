@@ -66,7 +66,6 @@ public class CLI {
 	String index = parsedArguments.getString("index");
 	String hashName = parsedArguments.getString("name");
 	
-	Annotate annotator = new Annotate(index,hashName);
 	// Input
 	BufferedReader stdInReader = null;
 	// Output
@@ -79,6 +78,9 @@ public class CLI {
 	String lang = kaf.getLang();
 	KAFDocument.LinguisticProcessor lp = kaf.addLinguisticProcessor("entities", "ixa-pipe-ned-" + lang, "1.0");
 	lp.setBeginTimestamp();
+
+	Annotate annotator = new Annotate(index,hashName,lang);
+
 	try {	    
 	    List<Entity> entities = kaf.getEntities();
 	    if (!entities.isEmpty()){

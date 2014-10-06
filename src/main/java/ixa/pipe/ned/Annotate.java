@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
+import java.util.Map;
 
 import ixa.kaflib.KAFDocument;
 import ixa.kaflib.WF;
@@ -23,6 +24,10 @@ import org.w3c.dom.Element;
 
 import  java.net.URLEncoder;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class Annotate {
 
   DBpediaSpotlightClient c;
@@ -30,9 +35,11 @@ public class Annotate {
     DictManager wikiIndex;
     String index;
     String hashName;
+    String language;
 
-    public Annotate(String index,String hashName){
+    public Annotate(String index,String hashName,String language){
 	c = new DBpediaSpotlightClient ();
+	this.language = language;
 	if (!index.equals("none")){
 	    wikiIndex = new DictManager(index,hashName);
 	    multiple = true;
@@ -60,7 +67,7 @@ public class Annotate {
 	String entityAnnotation = surfaceForm(entities,pos,set);
 	String annotation = spotAnnotation(text,entityAnnotation);
 	Document response = annotate(annotation, host, port, endpoint);
-	XMLSpot2KAF(kaf,response);
+	XMLSpot2KAF(kaf,response, endpoint);
 	pos = set;
 	set+=100;
 	if (max < set){
@@ -266,11 +273,21 @@ public class Annotate {
 
   private Document annotate(String annotation, String host, String port, String endpoint) throws AnnotationException {
       Document response = c.extract(new Text(annotation), host, port, endpoint);
-    return response;
+      return response;
   }
 
 
-  private void XMLSpot2KAF(KAFDocument kaf, Document doc){
+  private void XMLSpot2KAF(KAFDocument kaf, Document doc, String endpoint){
+      if (endpoint.equals("disambiguate")){
+	  disambiguate2KAF(kaf,doc);
+      }
+      if (endpoint.equals("candidates")){
+	  candidates2KAF(kaf,doc);
+      }
+  }
+
+
+  private void disambiguate2KAF(KAFDocument kaf, Document doc){
     // Store the References into a hash. Key: offset
     HashMap<Integer,String> refs = new HashMap<Integer,String>();
     HashMap<Integer, Float> confs = new HashMap<Integer,Float>();
@@ -286,7 +303,7 @@ public class Annotate {
 
         Element eElement = (Element) nNode;
         refs.put(new Integer(eElement.getAttribute("offset")),eElement.getAttribute("URI"));
-	confs.put(new Integer(eElement.getAttribute("offset")),Float.valueOf(eElement.getAttribute("similarityScore")));
+  	confs.put(new Integer(eElement.getAttribute("offset")),Float.valueOf(eElement.getAttribute("similarityScore")));
       }
     }
 
@@ -298,24 +315,109 @@ public class Annotate {
       int offset = getEntityOffset(entity);
       if (refs.containsKey(offset)){
         String reference = refs.get(offset);
+  	Float conf = confs.get(offset);
         // Create ExternalRef
-        ExternalRef externalRef = kaf.createExternalRef(resource,reference);
-	externalRef.setConfidence(confs.get(offset));
-		
-        // addExternalRef to Entity
+        ExternalRef externalRef = kaf.newExternalRef(resource,reference);
+  	externalRef.setConfidence(conf);
+	externalRef.setSource(language);
+	externalRef.setReftype(language);
+	// addExternalRef to Entity
         entity.addExternalRef(externalRef);
-	if (multiple){
-	    String indexResource = index + "-" + hashName;
-	    String indexRef = getIndexRef(reference);
-	    if (indexRef != null){
-		ExternalRef wikiRef = kaf.createExternalRef(indexResource,indexRef);
-		entity.addExternalRef(wikiRef);
-	    }
-	}
+
+  	if (multiple){
+  	    String indexResource = "wikipedia-db-" + hashName;
+  	    String indexRef = getIndexRef(reference);
+  	    if (indexRef != null){
+  		ExternalRef wikiRef = kaf.newExternalRef(indexResource,indexRef);
+  		wikiRef.setConfidence(conf);
+		wikiRef.setSource(language);
+		wikiRef.setReftype("en");
+		externalRef.addExternalRef(wikiRef);
+  	    }
+  	}
       }
     }
     
   }
+
+    private void candidates2KAF(KAFDocument kaf, Document doc){
+	Map<Integer, List<String>> refs = new HashMap<Integer, List<String>>();
+	Map<Integer, List<Float>> confs = new HashMap<Integer, List<Float>>();
+
+	doc.getDocumentElement().normalize();
+	NodeList nList = doc.getElementsByTagName("surfaceForm");
+	for (int temp = 0; temp < nList.getLength(); temp++) {
+	    
+	    Node nNode = nList.item(temp);
+
+	    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+		
+		Element eElement = (Element) nNode;
+		Integer offset = new Integer(eElement.getAttribute("offset"));
+		NodeList candidates = eElement.getElementsByTagName("resource");
+
+		List<String> uris = new ArrayList<String>();
+		List<Float> scores = new ArrayList<Float>();
+
+		for (int r = 0; r < candidates.getLength(); r++){
+		    Node cand = candidates.item(r);
+		    if (cand.getNodeType() == Node.ELEMENT_NODE){
+			Element eCand = (Element) cand;
+			String uri = eCand.getAttribute("uri");
+			Float score = Float.valueOf(eCand.getAttribute("finalScore"));
+			if (score > 0.0){
+			    uris.add(uri);
+			    scores.add(score);
+			}
+		    }
+		}
+		
+		refs.put(offset,uris);
+		confs.put(offset,scores);
+	    }
+	}
+
+
+	String resource = "spotlight_v1";
+	List<Entity> entities = kaf.getEntities();
+	for (Entity entity : entities){
+	    // Get the offset of the entity
+	    int offset = getEntityOffset(entity);
+	    if (refs.containsKey(offset)){
+		List<String> uriValues = refs.get(offset);
+		List<Float> scoreValues = confs.get(offset);
+
+		for (int i = 0; i < uriValues.size(); i++){
+		    String reference = uriValues.get(i);
+		    Float conf = scoreValues.get(i);
+		    // Create ExternalRef
+		    ExternalRef externalRef = kaf.newExternalRef(resource,reference);
+		    externalRef.setConfidence(conf);
+		    externalRef.setSource(language);
+		    externalRef.setReftype(language);
+		    // addExternalRef to Entity
+		    entity.addExternalRef(externalRef);
+
+		    if (multiple){
+			String indexResource = "wikipedia-db-" + hashName;
+			String indexRef = getIndexRef(reference);
+			if (indexRef != null){
+			    ExternalRef wikiRef = kaf.newExternalRef(indexResource,indexRef);
+			    wikiRef.setConfidence(conf);
+			    wikiRef.setSource(language);
+			    wikiRef.setReftype("en");
+			    externalRef.addExternalRef(wikiRef);
+			}
+		    }
+		}
+	    }
+	}
+	
+
+
+	
+    }
+
 
   private int getEntityOffset(Entity ent){
     int offset = -1;

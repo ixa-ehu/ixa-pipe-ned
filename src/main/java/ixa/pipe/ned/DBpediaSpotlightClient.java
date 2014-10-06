@@ -165,12 +165,48 @@ offset="414"/></annotation>
 
     		return doc;
     	}
+
     public static Document loadXMLFromString(String xml)  throws org.xml.sax.SAXException, java.io.IOException, javax.xml.parsers.ParserConfigurationException
     {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         InputSource is = new InputSource(new StringReader(xml));
         return builder.parse(is);
+    }
+
+    public JSONObject extractJSON(Text text, String host, String port, String endpoint) throws AnnotationException{
+
+
+
+        LOG.info("Querying API.");
+    		String spotlightResponse = "";
+    		Document doc = null;
+    		try {
+		    String url = host + ":" + port +"/rest/" + endpoint;
+
+    		    PostMethod method = new PostMethod(url);
+    		    //method.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                    method.setRequestHeader("Content-Type","application/x-www-form-urlencoded;charset=utf-8");
+    		    NameValuePair[] params = {new NameValuePair("text",text.text()), new NameValuePair("spotter","SpotXmlParser"), new NameValuePair("confidence",Double.toString(CONFIDENCE)), new NameValuePair("support",Integer.toString(SUPPORT)), new NameValuePair("coreferenceResolution",Boolean.toString(COREFERENCE))};
+    		    method.setRequestBody(params);
+    		    method.setRequestHeader(new Header("Accept", "application/json"));
+    		    spotlightResponse = request(method);
+    		}
+		catch (Exception e) {
+		    throw new AnnotationException("Could not encode text.", e);
+		}
+
+		assert spotlightResponse != null;
+		JSONObject resultJSON = null;
+		
+		try {
+		    resultJSON = new JSONObject(spotlightResponse);
+		} catch (JSONException e) {
+		    throw new AnnotationException("Received invalid response from DBpedia Spotlight API.");
+		}
+		
+		return resultJSON; 
+
     }
 
 }
