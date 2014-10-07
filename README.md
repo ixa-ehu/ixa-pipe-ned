@@ -130,11 +130,9 @@ The port numbers assigned to each language are the following:
 
     cat ner.naf | java -jar ixa-pipe-ned-1.0.jar -p $PORT_NUMBER
 
-** The default option chooses one dbpedia-entry for each entity. It is
-   also possible to return a ranked list of candidates for each
-   entity:
+** The default option chooses one dbpedia-entry for each entity. It is  also possible to return a ranked list of candidates for each entity:
 
-   cat ner.naf | java -jar ixa-pipe-ned-1.0.jar -p $PORT_NUMBER -e candidates
+    cat ner.naf | java -jar ixa-pipe-ned-1.0.jar -p $PORT_NUMBER -e candidates
 
 ### 7. ixa-pipe-ned SPECIAL USAGE
 
