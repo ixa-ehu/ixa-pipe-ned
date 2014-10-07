@@ -363,7 +363,11 @@ public class Annotate {
 		    Node cand = candidates.item(r);
 		    if (cand.getNodeType() == Node.ELEMENT_NODE){
 			Element eCand = (Element) cand;
-			String uri = eCand.getAttribute("uri");
+			String uri = "http://";
+			if (!language.equals("en")){
+			    uri += language + ".";
+			}
+			uri += "dbpedia.org/resource/" + eCand.getAttribute("uri");
 			Float score = Float.valueOf(eCand.getAttribute("finalScore"));
 			if (score > 0.0){
 			    uris.add(uri);
@@ -387,7 +391,8 @@ public class Annotate {
 		List<String> uriValues = refs.get(offset);
 		List<Float> scoreValues = confs.get(offset);
 
-		for (int i = 0; i < uriValues.size(); i++){
+		//for (int i = 0; i < uriValues.size(); i++){
+		for (int i = uriValues.size() -1 ; i >= 0; i--){
 		    String reference = uriValues.get(i);
 		    Float conf = scoreValues.get(i);
 		    // Create ExternalRef
