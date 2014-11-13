@@ -76,7 +76,7 @@ public class CLI {
 	KAFDocument kaf = KAFDocument.createFromStream(stdInReader);
 	
 	String lang = kaf.getLang();
-	KAFDocument.LinguisticProcessor lp = kaf.addLinguisticProcessor("entities", "ixa-pipe-ned-" + lang, "1.0");
+	KAFDocument.LinguisticProcessor lp = kaf.addLinguisticProcessor("entities", "ixa-pipe-ned-" + lang, "1.1.0");
 	lp.setBeginTimestamp();
 
 	Annotate annotator = new Annotate(index,hashName,lang);
