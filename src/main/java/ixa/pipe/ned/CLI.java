@@ -17,8 +17,18 @@ import net.sourceforge.argparse4j.inf.Namespace;
 
 public class CLI {
 
+    private String version = CLI.class.getPackage().getImplementationVersion();
+    private String commit = CLI.class.getPackage().getSpecificationVersion();
+
+    public CLI() {
+    }
+
     public static void main(String[] args) throws Exception { // throws IOException {
-    	
+    	CLI cmdLine = new CLI();
+	cmdLine.parseCLI(args);
+    }
+
+    public final void parseCLI(final String[] args) throws Exception {
     	Namespace parsedArguments = null;
 
         // create Argument Parser
@@ -76,7 +86,7 @@ public class CLI {
 	KAFDocument kaf = KAFDocument.createFromStream(stdInReader);
 	
 	String lang = kaf.getLang();
-	KAFDocument.LinguisticProcessor lp = kaf.addLinguisticProcessor("entities", "ixa-pipe-ned-" + lang, "1.1.0");
+	KAFDocument.LinguisticProcessor lp = kaf.addLinguisticProcessor("entities", "ixa-pipe-ned-" + lang, version + "-" + commit);
 	lp.setBeginTimestamp();
 
 	Annotate annotator = new Annotate(index,hashName,lang);
