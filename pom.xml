@@ -4,7 +4,7 @@
   <groupId>ixa</groupId>
   <artifactId>ixa-pipe-ned</artifactId>
   <packaging>jar</packaging>
-  <version>1.1.1</version>
+  <version>1.1.2</version>
   <name>ixa-pipe-ned</name>
   <description>ixa-pipe-ned is part of IXA-pipeline and performs Named Entity Disambiguation based on DBpedia Spotlight.
     In principle the pipeline is available for the annotation of English and Spanish texts, but it can be easily extended to
@@ -46,11 +46,12 @@
       <scope>test</scope>
     </dependency>
 
+
     <dependency>
       <groupId>com.github.ixa-ehu</groupId>
       <artifactId>kaflib-naf</artifactId>
-      <version>1.0.2</version> <!-- Set the latest version here -->
-    </dependency>
+      <version>1.1.5</version>
+    </dependency> 
 
    <dependency>
      <groupId>commons-httpclient</groupId>
