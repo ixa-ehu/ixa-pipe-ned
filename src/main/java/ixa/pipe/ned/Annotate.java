@@ -308,7 +308,8 @@ public class Annotate {
     }
 
 
-    String resource = "spotlight_v1";
+    String resource = "dbpedia-" + language;
+    String source = "spotlight_v1";
     List<Entity> entities = kaf.getEntities();
     for (Entity entity : entities){
       // Get the offset of the entity
@@ -319,19 +320,21 @@ public class Annotate {
         // Create ExternalRef
         ExternalRef externalRef = kaf.newExternalRef(resource,reference);
   	externalRef.setConfidence(conf);
-	externalRef.setSource(language);
+	externalRef.setSource(source);
+
 	externalRef.setReftype(language);
 	// addExternalRef to Entity
         entity.addExternalRef(externalRef);
 
   	if (multiple){
-  	    String indexResource = "wikipedia-db-" + hashName;
+	    String indexResource = "dbpedia-en";
+  	    String refType = "wikipedia-db-" + hashName;
   	    String indexRef = getIndexRef(reference);
   	    if (indexRef != null){
   		ExternalRef wikiRef = kaf.newExternalRef(indexResource,indexRef);
   		wikiRef.setConfidence(conf);
-		wikiRef.setSource(language);
-		wikiRef.setReftype("en");
+		wikiRef.setSource(source);
+		wikiRef.setReftype(refType);
 		externalRef.addExternalRef(wikiRef);
   	    }
   	}
@@ -382,7 +385,8 @@ public class Annotate {
 	}
 
 
-	String resource = "spotlight_v1";
+	String resource = "dbpedia-" + language;
+	String source = "spotlight_v1";
 	List<Entity> entities = kaf.getEntities();
 	for (Entity entity : entities){
 	    // Get the offset of the entity
@@ -398,19 +402,19 @@ public class Annotate {
 		    // Create ExternalRef
 		    ExternalRef externalRef = kaf.newExternalRef(resource,reference);
 		    externalRef.setConfidence(conf);
-		    externalRef.setSource(language);
-		    externalRef.setReftype(language);
+		    externalRef.setSource(source);
 		    // addExternalRef to Entity
 		    entity.addExternalRef(externalRef);
 
 		    if (multiple){
-			String indexResource = "wikipedia-db-" + hashName;
+			String indexResource = "dbpedia-en";
+			String refType = "wikipedia-db-" + hashName;
 			String indexRef = getIndexRef(reference);
 			if (indexRef != null){
 			    ExternalRef wikiRef = kaf.newExternalRef(indexResource,indexRef);
 			    wikiRef.setConfidence(conf);
-			    wikiRef.setSource(language);
-			    wikiRef.setReftype("en");
+			    wikiRef.setSource(source);
+			    wikiRef.setReftype(refType);
 			    externalRef.addExternalRef(wikiRef);
 			}
 		    }
