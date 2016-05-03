@@ -4,7 +4,7 @@
   <groupId>ixa</groupId>
   <artifactId>ixa-pipe-ned</artifactId>
   <name>ixa-pipe-ned</name>
-  <version>1.1.4</version>
+  <version>1.1.6</version>
   <description>ixa-pipe-ned is part of IXA-pipeline and performs Named Entity Disambiguation based on DBpedia Spotlight.
     In principle the pipeline is available for the annotation of English and Spanish texts, but it can be easily extended to
     deal with other languages too.</description>
